@@ -1,11 +1,3 @@
-/*
- * @Author: zhangdi 1258956799@qq.com
- * @Date: 2023-06-19 20:19:38
- * @LastEditors: zhangdi 1258956799@qq.com
- * @LastEditTime: 2023-06-20 00:12:02
- * @FilePath: /Chat-Bot/screens/Home.jsx
- * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
- */
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, TouchableOpacity, Text, View, Image } from "react-native";
 
@@ -22,8 +14,6 @@ export default function Home({ navigation }) {
 					backgroundColor: "#a5e89f",
 				}}
 			/>
-			{/* <Image source={require("../assets/bot.jpg")} style={styles.image} /> */}
-			<Text style={styles.text}>Hey there! This is Elsa</Text>
 			<TouchableOpacity
 				onPress={() => navigation.navigate("Profile", { name: "Jane" })}
 			>
@@ -33,7 +23,6 @@ export default function Home({ navigation }) {
 				style={{
 					paddingTop: 10,
 					fontSize: 13,
-					// color: "darkgary",
 					position: "absolute",
 					bottom: 20,
 				}}
@@ -61,19 +50,10 @@ const styles = StyleSheet.create({
 		paddingVertical: 10,
 		paddingHorizontal: 17,
 		fontSize: 20,
-		// fontWeight: 400,
 	},
 	moveUpDown: {
 		transform: [{ translateY: -10 }, { translateY: 10 }],
 	},
-	// image: {
-	// 	// animationName: "moveUpDown",
-	// 	// animationIterationCount: "infinite",
-	// 	// animationDirection: "alternate",
-	// 	// animationDuration: "2s",
-	// 	width: 300,
-	// 	height: 300,
-	// },
 	text: {
 		fontSize: 20,
 		paddingBottom: 14,
