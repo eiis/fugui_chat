@@ -1,6 +1,6 @@
 import { StatusBar } from "expo-status-bar";
 import React, { useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity } from "react-native";
 import ChatPage from "./screens/ChatPage";
 import HomeMain from "./screens/Home";
 import SettingMain from "./screens/Setting";
@@ -8,24 +8,31 @@ import { Ionicons } from '@expo/vector-icons';
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-
+import { TabBarVisibleContext } from './utils/TabBarVisibleContext';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
-// 创建一个Context
-export const TabBarVisibleContext = React.createContext({
-	tabBarVisible: true,
-	setTabBarVisible: () => { },
-});
-
-function Home() {
+function Home({ navigation }) {
 	return (
 		<Stack.Navigator>
 			<Stack.Screen
 				name='HomeMain'
 				component={HomeMain}
-				options={{ title: "HomeMain", headerShown: true }}
+				options={{
+					title: "Home", headerShown: true, headerStyle: {
+						backgroundColor: '#EEE3CB', // 设置导航栏背景色
+					},
+					headerTintColor: '#fff', // 设置导航栏标题和按钮颜色
+					headerTitleStyle: {
+						fontWeight: 'bold', // 设置导航栏标题样式
+					},
+					headerRight: () => (
+						<TouchableOpacity onPress={() => navigation.navigate('ChatPage', { id: '' })}>
+							<Text style={{ marginRight: 15, color: '#00DFA2' }}>新对话</Text>
+						</TouchableOpacity>
+					),
+				}}
 			/>
 			<Stack.Screen
 				name='ChatPage'
@@ -69,6 +76,7 @@ export default function App() {
 					headerShown: false,
 					tabBarStyle: {
 						display: tabBarVisible ? 'flex' : 'none',
+						backgroundColor: '#EEE3CB',  // 用你希望的颜色替换 'blue'
 					},
 					tabBarIcon: ({ focused, color, size }) => {
 						let iconName;
@@ -88,10 +96,11 @@ export default function App() {
 					},
 				})}
 					tabBarOptions={{
-						activeTintColor: '#a5e89f',  // active icon color
+						activeTintColor: '#519259',  // active icon color
 						inactiveTintColor: 'gray',  // inactive icon color
 						tabBarIconSize: 24,  // icon size
-					}}>
+					}}
+				>
 					<Tab.Screen name="Home" component={Home} />
 					<Tab.Screen name="Settings" component={Settings} />
 				</Tab.Navigator>

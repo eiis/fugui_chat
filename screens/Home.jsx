@@ -2,73 +2,85 @@ import React, { useEffect, useState } from "react";
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, TouchableOpacity, Text, View, Image } from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function Home({ navigation }) {
 
 	const [msgs, setMesgs] = useState([{}])
-	useEffect(() => {
-		const getApiKey = async () => {
-			try {
-				const value = await AsyncStorage.getItem('@chat_List');
-				if (value !== null) {
-					console.log(JSON.parse(value), 'value')
-					setMesgs(JSON.parse(value))
+	useFocusEffect(
+		React.useCallback(() => {
+			const getApiKey = async () => {
+				try {
+					const value = await AsyncStorage.getItem('@chat_List');
+					if (value !== null) {
+						console.log(JSON.parse(value), 'value')
+						setMesgs(JSON.parse(value))
+					}
+				} catch (e) {
+					console.error(e);
 				}
-			} catch (e) {
-				console.error(e);
 			}
-		}
-		getApiKey();
-	}, []);
+			getApiKey();
+		}, [])
+	);
 
 	return (
 		<View style={styles.container}>
-			{/* <Image
-				source={require("../assets/curve.png")}
-				style={{
-					position: "absolute",
-					top: 0,
-					height: 100,
-					width: "100%",
-					backgroundColor: "#090a09",
-				}}
-			/> */}
-			{msgs && msgs.map((msg, index) => (
-				<TouchableOpacity
-					key={index}
-					onPress={() => navigation.navigate('ChatPage', { id: msg.id })}
+			<View>
+				{msgs && msgs.map((msg, index) => (
+					<TouchableOpacity
+						key={index}
+						onPress={() => navigation.navigate('ChatPage', { id: msg.id })}
+						style={{
+							margin: 5,
+							padding: 10,
+							backgroundColor: '#FFF',
+							borderBottomWidth: 1,
+							borderBottomColor: 'rgba(128, 128, 128, 0.5)',
+						}}
+					>
+						<View style={{ flexDirection: 'row', alignItems: 'center' }}>
+							<View style={{ marginRight: 10 }}>
+								<Ionicons name={'chatbox-ellipses'} size={24} color={'#519259'} />
+							</View>
+							<View style={{ flex: 1, }}>
+								<Text>随便聊聊</Text>
+								<Text
+									numberOfLines={1}
+									ellipsizeMode='tail'
+								>
+									{msg.messages && msg.messages[msg.messages.length - 1].message}
+								</Text>
+							</View>
+						</View>
+
+					</TouchableOpacity>
+				))}
+			</View>
+			<View>
+				<Text
 					style={{
-						margin: 5,
-						padding: 10,
-						backgroundColor: '#FFE9A0',
+						textAlign: 'center',
+						marginBottom: 10
 					}}
 				>
-					<Text>
-						{msg.id}
-					</Text>
-				</TouchableOpacity>
-			))}
-			<Text
-				style={{
-					paddingTop: 10,
-					fontSize: 13,
-					position: "absolute",
-					bottom: 20,
-				}}
-			>
-				@ Powered by CHAT-GPT
-			</Text>
+					@ Powered by FUGUI-GPT
+				</Text>
+			</View>
 			<StatusBar style='auto' />
-		</View>
+		</View >
 	);
 }
 
 const styles = StyleSheet.create({
 	container: {
 		backgroundColor: "#fff",
-		// alignItems: "center",
-		// justifyContent: "center",
 		height: "100%",
+		display: 'flex',
+		flexDirection: 'column',
+		// alignItems: 'center',
+		justifyContent: 'space-between'
 	},
 	button: {
 		width: 300,

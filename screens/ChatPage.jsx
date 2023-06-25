@@ -1,10 +1,11 @@
 import React, { useState, useContext, useRef, useEffect, useCallback } from "react";
-import { TabBarVisibleContext } from '../App';
+// import { TabBarVisibleContext } from '../App';
 import { Typewriter } from '../utils/01'
 import * as Clipboard from 'expo-clipboard';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Modal from 'react-native-modal';
 import { v4 as uuidv4 } from 'uuid';
+import { TabBarVisibleContext } from '../utils/TabBarVisibleContext';
 
 import {
 	View,
@@ -21,14 +22,16 @@ import Icon from "react-native-vector-icons/FontAwesome";
 
 
 const ChatPage = ({ route }) => {
-	const { id } = route.params;
+	const { id = '' } = route.params;
 	useEffect(() => {
 		const getApiKey = async () => {
 			try {
-				const chat_List = JSON.parse(await AsyncStorage.getItem('@chat_List'));
-				if (chat_List !== null) {
-					const found = chat_List.find(item => item.id === id);
-					setMessages(found.messages)
+				if (id) {
+					const chat_List = JSON.parse(await AsyncStorage.getItem('@chat_List'));
+					if (chat_List !== null) {
+						const found = chat_List.find(item => item.id === id);
+						setMessages(found.messages)
+					}
 				}
 			} catch (e) {
 				console.error(e);
@@ -147,17 +150,28 @@ const ChatPage = ({ route }) => {
 
 			let chatList = await AsyncStorage.getItem('@chat_List');
 			chatList = chatList ? JSON.parse(chatList) : [];
-			console.log('chatList', chatList)
 
-			const chatRecord = {
-				id: chatId,  // 添加唯一的聊天ID
-				messages: newMessages,
-			};
-			chatList.push(chatRecord);
+			if (!id) {
+				const chatRecord = {
+					id: chatId,  // 添加唯一的聊天ID
+					messages: newMessages,
+				};
+				chatList.push(chatRecord);
 
-			console.log('chatRecord', chatRecord)
+				console.log('chatRecord', chatRecord)
 
-			await AsyncStorage.setItem('@chat_List', JSON.stringify(chatList))
+				await AsyncStorage.setItem('@chat_List', JSON.stringify(chatList))
+			} else {
+				const chat_List = JSON.parse(await AsyncStorage.getItem('@chat_List'));
+				const found = chat_List.find(item => item.id === id);
+				console.log(found.messages, 'found')
+				found.messages.push(
+					{ message: message, sender: "user" },
+					{ message: response.data.choices[0].message.content, sender: "ai", isLoading: false }
+				)
+
+				await AsyncStorage.setItem('@chat_List', JSON.stringify(chat_List)); // 将更新后的chat_List保存到AsyncStorage中
+			}
 
 			// 在这里，newMessages 是 messages 的最新值
 			console.log('newMessages', newMessages);
