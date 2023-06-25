@@ -1,24 +1,53 @@
+import React, { useEffect, useState } from "react";
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, TouchableOpacity, Text, View, Image } from "react-native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Home({ navigation }) {
+
+	const [msgs, setMesgs] = useState([{}])
+	useEffect(() => {
+		const getApiKey = async () => {
+			try {
+				const value = await AsyncStorage.getItem('@chat_List');
+				if (value !== null) {
+					console.log(JSON.parse(value), 'value')
+					setMesgs(JSON.parse(value))
+				}
+			} catch (e) {
+				console.error(e);
+			}
+		}
+		getApiKey();
+	}, []);
+
 	return (
 		<View style={styles.container}>
-			<Image
+			{/* <Image
 				source={require("../assets/curve.png")}
 				style={{
 					position: "absolute",
 					top: 0,
 					height: 100,
 					width: "100%",
-					backgroundColor: "#a5e89f",
+					backgroundColor: "#090a09",
 				}}
-			/>
-			<TouchableOpacity
-				onPress={() => navigation.navigate("Profile", { name: "Jane" })}
-			>
-				<Text style={styles.button}>Ask Me Anything</Text>
-			</TouchableOpacity>
+			/> */}
+			{msgs && msgs.map((msg, index) => (
+				<TouchableOpacity
+					key={index}
+					onPress={() => navigation.navigate('ChatPage', { id: msg.id })}
+					style={{
+						margin: 5,
+						padding: 10,
+						backgroundColor: '#FFE9A0',
+					}}
+				>
+					<Text>
+						{msg.id}
+					</Text>
+				</TouchableOpacity>
+			))}
 			<Text
 				style={{
 					paddingTop: 10,
@@ -37,8 +66,8 @@ export default function Home({ navigation }) {
 const styles = StyleSheet.create({
 	container: {
 		backgroundColor: "#fff",
-		alignItems: "center",
-		justifyContent: "center",
+		// alignItems: "center",
+		// justifyContent: "center",
 		height: "100%",
 	},
 	button: {

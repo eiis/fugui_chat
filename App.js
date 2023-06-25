@@ -2,8 +2,8 @@ import { StatusBar } from "expo-status-bar";
 import React, { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import ChatPage from "./screens/ChatPage";
-import Home from "./screens/Home";
-import Settings from "./screens/Setting";
+import HomeMain from "./screens/Home";
+import SettingMain from "./screens/Setting";
 import { Ionicons } from '@expo/vector-icons';
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -19,16 +19,16 @@ export const TabBarVisibleContext = React.createContext({
 	setTabBarVisible: () => { },
 });
 
-function HomeStack() {
+function Home() {
 	return (
 		<Stack.Navigator>
 			<Stack.Screen
-				name='Home'
-				component={Home}
-				options={{ title: "Welcome", headerShown: false }}
+				name='HomeMain'
+				component={HomeMain}
+				options={{ title: "HomeMain", headerShown: true }}
 			/>
 			<Stack.Screen
-				name='Profile'
+				name='ChatPage'
 				component={ChatPage}
 				options={{
 					title: "fuguiChat",
@@ -41,6 +41,18 @@ function HomeStack() {
 						fontWeight: 'bold',
 					},
 				}}
+			/>
+		</Stack.Navigator>
+	);
+}
+
+function Settings() {
+	return (
+		<Stack.Navigator>
+			<Stack.Screen
+				name='SettingMain'
+				component={SettingMain}
+				options={{ title: "设置", }}
 			/>
 		</Stack.Navigator>
 	);
@@ -63,8 +75,8 @@ export default function App() {
 						// Select an icon based on the route name
 						if (route.name === 'Home') {
 							iconName = focused
-								? 'home'
-								: 'home-outline';
+								? 'chatbox-ellipses'
+								: 'chatbox-ellipses-outline';
 						} else if (route.name === 'Settings') {
 							iconName = focused
 								? 'settings'
@@ -80,7 +92,7 @@ export default function App() {
 						inactiveTintColor: 'gray',  // inactive icon color
 						tabBarIconSize: 24,  // icon size
 					}}>
-					<Tab.Screen name="Home" component={HomeStack} />
+					<Tab.Screen name="Home" component={Home} />
 					<Tab.Screen name="Settings" component={Settings} />
 				</Tab.Navigator>
 			</NavigationContainer>
