@@ -46,7 +46,7 @@ export default function Home(props) {
 								width: 200,
 								height: 200,
 							}}
-							source={require("../assets/null.png")}
+							source={require("../assets/bot.jpg")}
 						/>
 					</View>
 				) : (
