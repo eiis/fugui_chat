@@ -31,10 +31,10 @@ function Home({ navigation }) {
 				// component={HomeMain}
 				children={(props) => <HomeMain {...props} refreshKey={refreshKey} />}
 				options={{
-					title: "Home",
-					headerShown: false,
+					title: "",
+					headerShown: true,
 					headerStyle: {
-						backgroundColor: '#EEE3CB', // 设置导航栏背景色
+						backgroundColor: '#a5e89f', // 设置导航栏背景色
 					},
 					headerTintColor: '#fff', // 设置导航栏标题和按钮颜色
 					headerTitleStyle: {
@@ -47,7 +47,7 @@ function Home({ navigation }) {
 					),
 					headerRight: () => (
 						<TouchableOpacity onPress={() => navigation.navigate('ChatPage', { id: '' })}>
-							<Text style={{ marginRight: 15, color: '#00DFA2' }}>新对话</Text>
+							<Text style={{ color: '#00DFA2' }}>新对话</Text>
 						</TouchableOpacity>
 					),
 				}}
@@ -94,7 +94,7 @@ export default function App() {
 					headerShown: false,
 					tabBarStyle: {
 						display: tabBarVisible ? 'flex' : 'none',
-						backgroundColor: '#EEE3CB',  // 用你希望的颜色替换 'blue'
+						backgroundColor: '#a5e89f',  // 用你希望的颜色替换 'blue'
 					},
 					tabBarIcon: ({ focused, color, size }) => {
 						let iconName;

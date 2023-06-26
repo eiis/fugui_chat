@@ -21,6 +21,13 @@ import Icon from "react-native-vector-icons/FontAwesome";
 
 const ChatPage = ({ route }) => {
 	const { id = '' } = route.params;
+	const [chatId, setChatId] = useState('');
+	//如果第一次进来生成一个chatId
+	useEffect(() => {
+		if (!id) {
+			setChatId(uuid.v4());  // 生成唯一的聊天ID
+		}
+	}, [id]); // 当id改变时触发
 	useEffect(() => {
 		const getApiKey = async () => {
 			try {
@@ -113,18 +120,7 @@ const ChatPage = ({ route }) => {
 	}
 
 	const sendMessage = async (apiKey) => {
-		const chatId = uuid.v4();  // 生成唯一的聊天ID
 		try {
-			// const apiKey = await AsyncStorage.getItem('@api_Key');
-			// if (!apiKey) {
-			// 	setModelMsg('请输入API_Key')
-			// 	setModalVisible(!isModalVisible);
-			// 	// 设定3秒后关闭模态窗口
-			// 	setTimeout(() => {
-			// 		setModalVisible(false);
-			// 	}, 3000);
-			// 	return
-			// }
 			setLoading(true);
 			setMessages([
 				...messages,
@@ -161,16 +157,31 @@ const ChatPage = ({ route }) => {
 			let chatList = await AsyncStorage.getItem('@chat_List');
 			chatList = chatList ? JSON.parse(chatList) : [];
 
-			if (!id) {
+			if (chatId) {
+				// console.log('第一次进来第一段聊天记录')
 				const chatRecord = {
 					id: chatId,  // 添加唯一的聊天ID
 					messages: newMessages,
 				};
-				chatList.push(chatRecord);
+				const chat_List = JSON.parse(await AsyncStorage.getItem('@chat_List'));
+				console.log('chat_List', chat_List)
+				const found = chat_List && chat_List.find(item => item.id === chatId);
+				if (found) {
+					console.log('found', found)
+					found.messages.push(
+						{ message: message, sender: "user" },
+						{ message: response.data.choices[0].message.content, sender: "ai", isLoading: false }
+					)
 
-				console.log('chatRecord', chatRecord)
+					await AsyncStorage.setItem('@chat_List', JSON.stringify(chat_List)); // 将更新后的chat_List保存到AsyncStorage中
+				} else {
+					chatList.push(chatRecord);
+					console.log('chatList', chatList)
 
-				await AsyncStorage.setItem('@chat_List', JSON.stringify(chatList))
+					console.log('chatRecord', chatRecord)
+
+					await AsyncStorage.setItem('@chat_List', JSON.stringify(chatList))
+				}
 			} else {
 				const chat_List = JSON.parse(await AsyncStorage.getItem('@chat_List'));
 				const found = chat_List.find(item => item.id === id);

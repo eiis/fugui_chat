@@ -15,6 +15,7 @@ export default function Home(props) {
 			const getApiKey = async () => {
 				try {
 					const value = await AsyncStorage.getItem('@chat_List');
+					console.log('value', value)
 					if (value !== null) {
 						setMesgs(JSON.parse(value))
 					} else {
@@ -25,7 +26,7 @@ export default function Home(props) {
 				}
 			}
 			getApiKey();
-			console.log('refreshKey', refreshKey)
+			// console.log('refreshKey', refreshKey)
 		}, [refreshKey])
 	);
 
