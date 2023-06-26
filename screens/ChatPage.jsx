@@ -1,10 +1,8 @@
-import React, { useState, useContext, useRef, useEffect, useCallback } from "react";
-// import { TabBarVisibleContext } from '../App';
-import { Typewriter } from '../utils/01'
+import React, { useState, useContext, useRef, useEffect, } from "react";
 import * as Clipboard from 'expo-clipboard';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Modal from 'react-native-modal';
-import { v4 as uuidv4 } from 'uuid';
+import uuid from 'react-native-uuid';
 import { TabBarVisibleContext } from '../utils/TabBarVisibleContext';
 
 import {
@@ -64,6 +62,18 @@ const ChatPage = ({ route }) => {
 	}, []);
 
 	const send = async () => {
+		const apiKey = await AsyncStorage.getItem('@api_Key')
+		// console.log('apiKey', apiKey)
+		if (!apiKey) {
+			console.log('apiKey', apiKey)
+			setModelMsg('请输入API_Key')
+			setModalVisible(!isModalVisible);
+			// 设定3秒后关闭模态窗口
+			setTimeout(() => {
+				setModalVisible(false);
+			}, 3000);
+			return
+		}
 		if (message) {
 			await setMessages([
 				...messages,
@@ -73,7 +83,7 @@ const ChatPage = ({ route }) => {
 				}
 			]);
 			setMessage("");
-			await sendMessage();
+			await sendMessage(apiKey);
 		}
 	};
 
@@ -102,25 +112,25 @@ const ChatPage = ({ route }) => {
 		return result
 	}
 
-	const sendMessage = async () => {
-		const chatId = uuidv4();  // 生成唯一的聊天ID
-		setLoading(true);
-		setMessages([
-			...messages,
-			{ message: message, sender: "user", loading: false },
-			{ message: '...', sender: "ai", loading: true },
-		]);
+	const sendMessage = async (apiKey) => {
+		const chatId = uuid.v4();  // 生成唯一的聊天ID
 		try {
-			const apiKey = await AsyncStorage.getItem('@api_Key');
-			if (!apiKey) {
-				setModelMsg('请输入API_Key')
-				setModalVisible(!isModalVisible);
-				// 设定3秒后关闭模态窗口
-				setTimeout(() => {
-					setModalVisible(false);
-				}, 3000);
-				return
-			}
+			// const apiKey = await AsyncStorage.getItem('@api_Key');
+			// if (!apiKey) {
+			// 	setModelMsg('请输入API_Key')
+			// 	setModalVisible(!isModalVisible);
+			// 	// 设定3秒后关闭模态窗口
+			// 	setTimeout(() => {
+			// 		setModalVisible(false);
+			// 	}, 3000);
+			// 	return
+			// }
+			setLoading(true);
+			setMessages([
+				...messages,
+				{ message: message, sender: "user", loading: false },
+				{ message: '...', sender: "ai", loading: true },
+			]);
 			const options = {
 				method: "POST",
 				url: 'https://chat.fugui.info/v1/chat/completions',
@@ -174,7 +184,7 @@ const ChatPage = ({ route }) => {
 			}
 
 			// 在这里，newMessages 是 messages 的最新值
-			console.log('newMessages', newMessages);
+			// console.log('newMessages', newMessages);
 			setLoading(false);
 		} catch (error) {
 			if (error.request) {
@@ -187,7 +197,7 @@ const ChatPage = ({ route }) => {
 				setModelMsg(error.message);
 			} else {
 				// Unknown error
-				console.error('error', error);
+				// console.error('error', error);
 				setModelMsg("Unknown error");
 			}
 
@@ -229,7 +239,6 @@ const ChatPage = ({ route }) => {
 					color: "black",
 					overflow: "scroll",
 					margin: 10,
-					// paddingTop: 10,
 				}}
 				ref={scrollViewRef}
 				onContentSizeChange={() =>
@@ -245,7 +254,7 @@ const ChatPage = ({ route }) => {
 								msg.sender === "user" ? "flex-end" : "flex-start",
 							flexDirection: "row",
 							flexWrap: "wrap",
-							alignItems: "flex-start",
+							alignItems: "flex-end",
 						}}
 					>
 						{msg.sender !== "user" && (
@@ -263,9 +272,9 @@ const ChatPage = ({ route }) => {
 							/>
 						)}
 						{msg.loading ? (
-							<View>
-								<ActivityIndicator size="small" color="#519259" />
-							</View>
+							// <View>
+							<ActivityIndicator size="small" color="#519259" />
+							// </View>
 						) : (
 							<Text
 								selectable
@@ -305,15 +314,13 @@ const ChatPage = ({ route }) => {
 			</ScrollView>
 			<View
 				style={{
-					padding: 10,
+					paddingHorizontal: 10,
+					margin: 10,
 					flexDirection: "row",
-					alignItems: "center",
-					paddingTop: 7,
 				}}
 			>
 				<TextInput
 					style={{
-						// flex: 1,
 						width: '85%',
 						borderRadius: 10,
 						fontSize: 17,
@@ -322,35 +329,33 @@ const ChatPage = ({ route }) => {
 						borderColor: "#a5e89f",
 						backgroundColor: "#a5e89f47",
 						marginRight: 10,
-						height: 70,
+						height: 50,
 					}}
 					value={message}
 					onChangeText={text => setMessage(text)}
 					placeholder='输入您的问题'
 				/>
-				<View
+				<TouchableOpacity
 					style={{
 						width: '15%',
 						backgroundColor: "#a5e89f",
-						height: 70,
+						height: 50,
 						display: "flex",
 						borderRadius: 10,
 						alignItems: "center",
 						justifyContent: 'center'
 					}}
+					disabled={loading}
+					onPress={send}
 				>
-					<TouchableOpacity onPress={send}>
-						<View>
-							<Icon
-								name='send'
-								style={{
-									fontSize: 25,
-								}}
-							/>
-						</View>
-					</TouchableOpacity>
-				</View>
-			</View>
+					<Icon
+						name='send'
+						style={{
+							fontSize: 25,
+						}}
+					/>
+				</TouchableOpacity>
+			</View >
 			<Modal isVisible={isModalVisible}>
 				<View style={{
 					justifyContent: 'flex-start',
@@ -366,7 +371,7 @@ const ChatPage = ({ route }) => {
 					<Text style={{ color: '#a5e89f' }}>{modelMsg}</Text>
 				</View>
 			</Modal>
-		</SafeAreaView>
+		</SafeAreaView >
 	);
 };
 

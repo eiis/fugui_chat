@@ -4,23 +4,19 @@ import { StyleSheet, Text, TextInput, View, Image } from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Home({ navigation }) {
-
-  const [apiKey, setApiKey] = useState(AsyncStorage.getItem('@api_Key'));
   const [isFocused, setIsFocused] = useState(false);
+
+  const [apiKey, setApiKey] = useState("");
 
   useEffect(() => {
     const getApiKey = async () => {
-      try {
-        const value = await AsyncStorage.getItem('@api_Key');
-        if (value !== null) {
-          setApiKey(value);
-        }
-      } catch (e) {
-        console.error(e);
-      }
-    }
+      const apiKeyFromStorage = await AsyncStorage.getItem('@api_Key');
+      setApiKey(apiKeyFromStorage || "");
+    };
+
     getApiKey();
   }, []);
+
 
   const onChangeText = async (text) => {
     try {

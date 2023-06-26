@@ -1,24 +1,35 @@
-import { StatusBar } from "expo-status-bar";
 import React, { useState } from "react";
 import { StyleSheet, Text, TouchableOpacity } from "react-native";
 import ChatPage from "./screens/ChatPage";
 import HomeMain from "./screens/Home";
 import SettingMain from "./screens/Setting";
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, AntDesign } from '@expo/vector-icons';
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { TabBarVisibleContext } from './utils/TabBarVisibleContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
 function Home({ navigation }) {
+
+	const [refreshKey, setRefreshKey] = useState(0);
+
+	const deleteChatList = async () => {
+		const chatLists = await AsyncStorage.getItem('@chat_List');
+		if (chatLists && chatLists.length > 0) {
+			await AsyncStorage.removeItem('@chat_List');
+			setRefreshKey(refreshKey => refreshKey + 1);
+		}
+	}
 	return (
 		<Stack.Navigator>
 			<Stack.Screen
 				name='HomeMain'
-				component={HomeMain}
+				// component={HomeMain}
+				children={(props) => <HomeMain {...props} refreshKey={refreshKey} />}
 				options={{
 					title: "Home", headerShown: true, headerStyle: {
 						backgroundColor: '#EEE3CB', // 设置导航栏背景色
@@ -27,6 +38,11 @@ function Home({ navigation }) {
 					headerTitleStyle: {
 						fontWeight: 'bold', // 设置导航栏标题样式
 					},
+					headerLeft: () => (
+						<TouchableOpacity onPress={deleteChatList}>
+							<AntDesign name="delete" size={24} color="black" />
+						</TouchableOpacity>
+					),
 					headerRight: () => (
 						<TouchableOpacity onPress={() => navigation.navigate('ChatPage', { id: '' })}>
 							<Text style={{ marginRight: 15, color: '#00DFA2' }}>新对话</Text>
