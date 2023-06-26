@@ -31,7 +31,9 @@ function Home({ navigation }) {
 				// component={HomeMain}
 				children={(props) => <HomeMain {...props} refreshKey={refreshKey} />}
 				options={{
-					title: "Home", headerShown: true, headerStyle: {
+					title: "Home",
+					headerShown: false,
+					headerStyle: {
 						backgroundColor: '#EEE3CB', // 设置导航栏背景色
 					},
 					headerTintColor: '#fff', // 设置导航栏标题和按钮颜色
