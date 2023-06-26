@@ -268,7 +268,7 @@ const ChatPage = ({ route }) => {
 									borderWidth: 1,
 									borderColor: "#a5e89f",
 								}}
-								source={require("../assets/bot.png")}
+								source={require("../assets/ai.png")}
 							/>
 						)}
 						{msg.loading ? (

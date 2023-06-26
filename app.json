@@ -16,16 +16,23 @@
     ],
     "ios": {
       "jsEngine": "jsc",
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.fuguihuakai.AwesomeProject"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.fuguihuakai.AwesomeProject"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "7cca884f-d9a2-4b95-86a4-f85f1d1e77cc"
+      }
     }
   }
 }
