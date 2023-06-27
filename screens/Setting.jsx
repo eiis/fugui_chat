@@ -44,7 +44,7 @@ export default function Home({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <View>
+      <View style={{ width: '100%', padding: 20 }}>
         <View style={styles.apiInput}>
           <Text>API Key设置</Text>
           <TextInput
@@ -88,14 +88,15 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: "#fff",
     height: "100%",
+    width: "100%",
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between'
   },
 
   apiInput: {
-    width: '90%',
-    marginVertical: 30,
+    width: '100%',
+    // marginVertical: 30,
   },
   theme: {
     width: '90%',

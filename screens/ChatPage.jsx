@@ -79,7 +79,7 @@ const ChatPage = ({ route }) => {
 			// 设定3秒后关闭模态窗口
 			setTimeout(() => {
 				setModalVisible(false);
-			}, 3000);
+			}, 1000);
 			return
 		}
 		if (message) {
@@ -217,7 +217,7 @@ const ChatPage = ({ route }) => {
 			// 设定3秒后关闭模态窗口
 			setTimeout(() => {
 				setModalVisible(false);
-			}, 3000);
+			}, 1000);
 			setLoading(false);
 		}
 	};
