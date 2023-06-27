@@ -1,8 +1,8 @@
-import { StatusBar } from "expo-status-bar";
 import React, { useState, useEffect } from "react";
-import { StyleSheet, Text, TextInput, View, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, TextInput, View } from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Modal from 'react-native-modal';
+
 
 export default function Home({ navigation }) {
   const [isFocused, setIsFocused] = useState(false);
@@ -60,6 +60,7 @@ export default function Home({ navigation }) {
         {/* <TouchableOpacity style={styles.theme} onPress={toggleModal}>
           <Text>主题设置</Text>
         </TouchableOpacity> */}
+        {/* <WebView source={{ html }} style={{ flex: 1 }} /> */}
       </View>
       <View>
         <Text
@@ -79,7 +80,7 @@ export default function Home({ navigation }) {
           {/* <Button title="Hide modal" onPress={toggleModal} /> */}
         </View>
       </Modal>
-    </View>
+    </View >
   );
 }
 

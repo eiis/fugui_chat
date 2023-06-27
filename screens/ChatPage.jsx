@@ -227,7 +227,7 @@ const ChatPage = ({ route }) => {
 			style={{
 				flex: 1,
 				backgroundColor: "#fff",
-				height: "100%",
+				// height: "100%",
 			}}
 		>
 			<Image
@@ -250,7 +250,7 @@ const ChatPage = ({ route }) => {
 					flex: 1,
 					color: "black",
 					overflow: "scroll",
-					margin: 10,
+					paddingHorizontal: 10,
 				}}
 				ref={scrollViewRef}
 				onContentSizeChange={() =>
