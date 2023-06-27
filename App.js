@@ -34,7 +34,7 @@ function Home({ navigation }) {
 					title: "",
 					headerShown: true,
 					headerStyle: {
-						backgroundColor: '#a5e89f', // 设置导航栏背景色
+						backgroundColor: '#EEE3CB', // 设置导航栏背景色
 					},
 					headerTintColor: '#fff', // 设置导航栏标题和按钮颜色
 					headerTitleStyle: {
@@ -56,10 +56,10 @@ function Home({ navigation }) {
 				name='ChatPage'
 				component={ChatPage}
 				options={{
-					title: "fuguiChat",
+					title: "随便聊聊",
 					headerShown: true,
 					headerStyle: {
-						backgroundColor: '#a5e89f',
+						backgroundColor: '#EEE3CB',
 					},
 					headerTintColor: '#fff',
 					headerTitleStyle: {
@@ -77,7 +77,12 @@ function Settings() {
 			<Stack.Screen
 				name='SettingMain'
 				component={SettingMain}
-				options={{ title: "设置", }}
+				options={{
+					title: "设置",
+					headerStyle: {
+						backgroundColor: '#EEE3CB',
+					},
+				}}
 			/>
 		</Stack.Navigator>
 	);
@@ -94,7 +99,7 @@ export default function App() {
 					headerShown: false,
 					tabBarStyle: {
 						display: tabBarVisible ? 'flex' : 'none',
-						backgroundColor: '#a5e89f',  // 用你希望的颜色替换 'blue'
+						backgroundColor: '#EEE3CB',  // 用你希望的颜色替换 'blue'
 					},
 					tabBarIcon: ({ focused, color, size }) => {
 						let iconName;

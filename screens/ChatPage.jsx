@@ -35,7 +35,11 @@ const ChatPage = ({ route }) => {
 					const chat_List = JSON.parse(await AsyncStorage.getItem('@chat_List'));
 					if (chat_List !== null) {
 						const found = chat_List.find(item => item.id === id);
+						console.log('found', found)
+						const hisMessagesToSend = found.messages.map(({ isLoading, ...rest }) => rest);
+						console.log('hisMessagesToSend', hisMessagesToSend)
 						setMessages(found.messages)
+						setMessagesToSend(hisMessagesToSend)
 					}
 				}
 			} catch (e) {
@@ -50,15 +54,12 @@ const ChatPage = ({ route }) => {
 	const scrollViewRef = useRef();
 	const [message, setMessage] = useState("");
 	const [messages, setMessages] = useState([
-		{
-			message: "Hi! How can I help you ?",
-			sender: "ai",
-			isLoading: false
-		},
 	]);
 	const [isModalVisible, setModalVisible] = useState(false);
 	const [modelMsg, setModelMsg] = useState('');
 	const [loading, setLoading] = useState(false);
+
+	const [messagesToSend, setMessagesToSend] = useState([])
 
 	useEffect(() => {
 		// 在页面加载时隐藏Tab Bar
@@ -85,19 +86,19 @@ const ChatPage = ({ route }) => {
 			await setMessages([
 				...messages,
 				{
-					message: message, sender: "user", isLoading: false,
-					message: 'loading', sender: "ai", isLoading: true
+					content: message, role: "user", isLoading: false,
+					content: 'loading', role: "ai", isLoading: true
 				}
 			]);
 			setMessage("");
-			await sendMessage(apiKey);
+			await sendMessage(apiKey, message);
 		}
 	};
 
-	const copyToClipboard = async (text) => {
-		await Clipboard.setStringAsync(text);
-		alert('已复制');
-	};
+	// const copyToClipboard = async (text) => {
+	// 	await Clipboard.setStringAsync(text);
+	// 	alert('已复制');
+	// };
 
 	const parsePack = (str) => {
 		// 定义正则表达式匹配模式
@@ -119,13 +120,13 @@ const ChatPage = ({ route }) => {
 		return result
 	}
 
-	const sendMessage = async (apiKey) => {
+	const sendMessage = async (apiKey, message) => {
 		try {
 			setLoading(true);
 			setMessages([
 				...messages,
-				{ message: message, sender: "user", loading: false },
-				{ message: '...', sender: "ai", loading: true },
+				{ content: message, role: "user", loading: false },
+				{ content: '...', role: "assistant", loading: true },
 			]);
 			const options = {
 				method: "POST",
@@ -137,10 +138,8 @@ const ChatPage = ({ route }) => {
 				data: {
 					model: 'gpt-3.5-turbo',
 					messages: [
-						{
-							role: 'user',
-							content: message
-						}
+						...messagesToSend,
+						{ role: "user", content: message }
 					]
 				}
 			};
@@ -148,9 +147,21 @@ const ChatPage = ({ route }) => {
 			const response = await axios.request(options);
 			const newMessages = [
 				...messages,
-				{ message: message, sender: "user" },
-				{ message: response.data.choices[0].message.content, sender: "ai", isLoading: false },
+				{ content: message, role: "user" },
+				{ content: response.data.choices[0].message.content, role: "assistant", isLoading: false },
 			];
+
+
+			const newMessagesToSend = [
+				...messagesToSend,
+				{ content: message, role: "user" },
+				{ content: response.data.choices[0].message.content, role: "assistant", },
+			]
+			console.log('newMessagesToSend', newMessagesToSend)
+
+			setMessagesToSend(newMessagesToSend)
+
+			// console.log('newMessages', newMessages)
 
 			setMessages(newMessages);
 
@@ -164,38 +175,30 @@ const ChatPage = ({ route }) => {
 					messages: newMessages,
 				};
 				const chat_List = JSON.parse(await AsyncStorage.getItem('@chat_List'));
-				console.log('chat_List', chat_List)
 				const found = chat_List && chat_List.find(item => item.id === chatId);
 				if (found) {
-					console.log('found', found)
 					found.messages.push(
-						{ message: message, sender: "user" },
-						{ message: response.data.choices[0].message.content, sender: "ai", isLoading: false }
+						{ content: message, role: "user" },
+						{ content: response.data.choices[0].message.content, role: "assistant", isLoading: false }
 					)
 
 					await AsyncStorage.setItem('@chat_List', JSON.stringify(chat_List)); // 将更新后的chat_List保存到AsyncStorage中
 				} else {
 					chatList.push(chatRecord);
-					console.log('chatList', chatList)
-
-					console.log('chatRecord', chatRecord)
+					// console.log('chatList', chatList)
 
 					await AsyncStorage.setItem('@chat_List', JSON.stringify(chatList))
 				}
 			} else {
 				const chat_List = JSON.parse(await AsyncStorage.getItem('@chat_List'));
 				const found = chat_List.find(item => item.id === id);
-				console.log(found.messages, 'found')
 				found.messages.push(
-					{ message: message, sender: "user" },
-					{ message: response.data.choices[0].message.content, sender: "ai", isLoading: false }
+					{ content: message, role: "user" },
+					{ content: response.data.choices[0].message.content, role: "assistant", isLoading: false }
 				)
 
 				await AsyncStorage.setItem('@chat_List', JSON.stringify(chat_List)); // 将更新后的chat_List保存到AsyncStorage中
 			}
-
-			// 在这里，newMessages 是 messages 的最新值
-			// console.log('newMessages', newMessages);
 			setLoading(false);
 		} catch (error) {
 			if (error.request) {
@@ -207,8 +210,6 @@ const ChatPage = ({ route }) => {
 				console.error('error', error.message);
 				setModelMsg(error.message);
 			} else {
-				// Unknown error
-				// console.error('error', error);
 				setModelMsg("Unknown error");
 			}
 
@@ -262,13 +263,13 @@ const ChatPage = ({ route }) => {
 						style={{
 							display: "flex",
 							justifyContent:
-								msg.sender === "user" ? "flex-end" : "flex-start",
+								msg.role === "user" ? "flex-end" : "flex-start",
 							flexDirection: "row",
 							flexWrap: "wrap",
 							alignItems: "flex-end",
 						}}
 					>
-						{msg.sender !== "user" && (
+						{msg.role !== "user" && (
 							<Image
 								style={{
 									width: 25,
@@ -283,29 +284,27 @@ const ChatPage = ({ route }) => {
 							/>
 						)}
 						{msg.loading ? (
-							// <View>
 							<ActivityIndicator size="small" color="#519259" />
-							// </View>
 						) : (
 							<Text
 								selectable
-								onPress={() => copyToClipboard(msg.message)}
+								// onPress={() => copyToClipboard(msg.message)}
 								style={{
-									backgroundColor: msg.sender === "user" ? '#a5e89f' : '#FFE9A0',
+									backgroundColor: msg.role === "user" ? '#a5e89f' : '#FFE9A0',
 									padding: 9,
 									marginTop: 4,
 									marginBottom: 5,
 									borderRadius: 10,
 									maxWidth: 270,
 									fontSize: 17,
-									borderRadius: msg.sender === "user" ? 20 : 10,
-									borderRadius: msg.sender !== "user" ? 20 : 10,
+									borderRadius: msg.role === "user" ? 20 : 10,
+									borderRadius: msg.role !== "user" ? 20 : 10,
 								}}
 							>
-								{msg.message}
+								{msg.content}
 							</Text>
 						)}
-						{msg.sender === "user" && (
+						{msg.role === "user" && (
 							<Image
 								style={{
 									width: 25,
@@ -377,7 +376,6 @@ const ChatPage = ({ route }) => {
 					width: 200,    // 调整宽度
 					height: 60,   // 调整高度
 					alignSelf: 'center', // 把模态窗口放到屏幕中央
-					// marginTop: 50  // 从屏幕顶部添加一些边距
 				}}>
 					<Text style={{ color: '#a5e89f' }}>{modelMsg}</Text>
 				</View>

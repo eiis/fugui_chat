@@ -15,7 +15,7 @@ export default function Home(props) {
 			const getApiKey = async () => {
 				try {
 					const value = await AsyncStorage.getItem('@chat_List');
-					console.log('value', value)
+					// console.log('value', value)
 					if (value !== null) {
 						setMesgs(JSON.parse(value))
 					} else {
@@ -72,7 +72,7 @@ export default function Home(props) {
 										numberOfLines={1}
 										ellipsizeMode='tail'
 									>
-										{msg.messages && msg.messages[msg.messages.length - 1].message}
+										{msg.messages && msg.messages[msg.messages.length - 1].content}
 									</Text>
 								</View>
 							</View>
