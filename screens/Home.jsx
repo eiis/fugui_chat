@@ -4,6 +4,8 @@ import { StyleSheet, TouchableOpacity, Text, View, Image } from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
+import { Swipeable } from 'react-native-gesture-handler';
+
 
 export default function Home(props) {
 	//需要先获取到所有的props再进行解构,不能直接在函数的参数中直接解构
@@ -51,32 +53,44 @@ export default function Home(props) {
 					</View>
 				) : (
 					msgs.map((msg, index) => (
-						<TouchableOpacity
+						<Swipeable
 							key={index}
-							onPress={() => navigation.navigate('ChatPage', { id: msg.id })}
-							style={{
-								margin: 5,
-								padding: 10,
-								backgroundColor: '#FFF',
-								borderBottomWidth: 1,
-								borderBottomColor: 'rgba(128, 128, 128, 0.5)',
-							}}
+							renderRightActions={() => (
+								<TouchableOpacity
+									style={{ backgroundColor: 'red', justifyContent: 'center', padding: 20 }}
+									onPress={() => handleDelete(index)}
+								>
+									<Text style={{ color: 'white' }}>Delete</Text>
+								</TouchableOpacity>
+							)}
 						>
-							<View style={{ flexDirection: 'row', alignItems: 'center' }}>
-								<View style={{ marginRight: 10 }}>
-									<Ionicons name={'chatbox-ellipses'} size={24} color={'#519259'} />
+							<TouchableOpacity
+								key={index}
+								onPress={() => navigation.navigate('ChatPage', { id: msg.id })}
+								style={{
+									margin: 5,
+									padding: 10,
+									backgroundColor: '#FFF',
+									borderBottomWidth: 1,
+									borderBottomColor: 'rgba(128, 128, 128, 0.5)',
+								}}
+							>
+								<View style={{ flexDirection: 'row', alignItems: 'center' }}>
+									<View style={{ marginRight: 10 }}>
+										<Ionicons name={'chatbox-ellipses'} size={24} color={'#519259'} />
+									</View>
+									<View style={{ flex: 1, }}>
+										<Text>随便聊聊</Text>
+										<Text
+											numberOfLines={1}
+											ellipsizeMode='tail'
+										>
+											{msg.messages && msg.messages[msg.messages.length - 1].content}
+										</Text>
+									</View>
 								</View>
-								<View style={{ flex: 1, }}>
-									<Text>随便聊聊</Text>
-									<Text
-										numberOfLines={1}
-										ellipsizeMode='tail'
-									>
-										{msg.messages && msg.messages[msg.messages.length - 1].content}
-									</Text>
-								</View>
-							</View>
-						</TouchableOpacity>
+							</TouchableOpacity>
+						</Swipeable>
 					))
 				)}
 			</View>
